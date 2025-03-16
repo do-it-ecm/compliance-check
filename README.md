@@ -8,3 +8,11 @@ This returns a non-zero exit code if the compliance check fails.
 ## Inputs
 
 - `source` - The directory to check (default: `.`)
+
+## Example usage
+
+```yaml
+uses: do-it-ecm/compliance-check@1.0.0
+with:
+  source: 'src'
+```
