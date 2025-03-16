@@ -13,7 +13,7 @@ const PROMOS_DIR = path.join(SOURCE_DIR, 'promos');
 
 export function runComplianceChecks(rawSourceDir = SOURCE_DIR) {
     const sourceDir = path.resolve(rawSourceDir);
-    console.log(`Running compliance checks on ${sourceDir}`);
+    console.log(`Running compliance checks on ${sourceDir} 🔎`);
     const invalidPaths = validateDirectory(sourceDir);
     const filesTooLarge = validateMediaDirectory(sourceDir);
 
@@ -45,10 +45,10 @@ export function runComplianceChecks(rawSourceDir = SOURCE_DIR) {
     }
 
     if (invalidPaths.length || filesTooLarge.length || invalidFileStructure.length) {
-        console.error('Compliance checks failed !');
+        console.error('❌ Compliance checks failed ❌');
         process.exit(1);
     } else {
-        console.log('Compliance checks passed !');
+        console.log('✔️  Compliance checks passed ✔️');
     }
 }
 
