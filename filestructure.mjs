@@ -44,8 +44,6 @@ const VALID_MON_SUBDIRS = /^(temps-\d+\.\d+|bonus)$/;
 const VALID_POK_SUBDIRS = /^(temps-\d+|bonus)$/;
 // Regex for non-student subdirectories (to avoid exploring them)
 const NON_STUDENT_SUBDIRS = /^(_(.*)|\.(.*))$/;
-// Regex for valid promotion format (XXXX-XXXX)
-const VALID_PROMOTION = /^[0-9]{4}-[0-9]{4}$/;
 // Regex for valid index file (html, njk or md)
 const VALID_INDEX = /^(index\.(html|njk|md))$/;
 // Regex for file patterns allow (html, njk or md)
@@ -62,10 +60,11 @@ export function validateStudentsFileStructure(promoPaths) {
     for (const promoPath of promoPaths) {
         console.log(`Validating student file structure in ${promoPath}`);
         // Check if promoPath is an existing directory and the name is a valid promotion format
-        if (fs.existsSync(promoPath) && VALID_PROMOTION.test(path.basename(promoPath))) {
+        if (fs.existsSync(promoPath)) {
             for (const student of fs.readdirSync(promoPath, { withFileTypes: true })) {
                 const studentPath = path.join(promoPath, student.name);
                 if (student.isDirectory() && !NON_STUDENT_SUBDIRS.test(student.name)) {
+                    console.log(`    - ${student.name}`);
                     invalidPaths.push(...validateStudentFileStructure(studentPath));
                 }
             }

@@ -11,17 +11,18 @@ import { validateStudentsFileStructure, STUDENT_FILESTRUCTURE_MESSAGE } from './
 const SOURCE_DIR = 'src';
 const PROMOS_DIR = path.join(SOURCE_DIR, 'promos');
 
-export function runComplianceChecks(sourceDir = SOURCE_DIR) {
+export function runComplianceChecks(rawSourceDir = SOURCE_DIR) {
+    const sourceDir = path.resolve(rawSourceDir);
     console.log(`Running compliance checks on ${sourceDir}`);
     const invalidPaths = validateDirectory(sourceDir);
     const filesTooLarge = validateMediaDirectory(sourceDir);
 
     let promosPaths = [];
-    if (sourceDir === SOURCE_DIR) {
+    if (sourceDir === path.resolve(SOURCE_DIR)) {
         // If the source directory is the default one, list all promotion directories
         promosPaths = fs.readdirSync(PROMOS_DIR, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
-            .map(dirent => path.join(PROMOS_DIR, dirent.name));
+            .map(dirent => path.resolve(path.join(PROMOS_DIR, dirent.name)));
     } else {
         // Otherwise, assume the source directory is a promotion directory
         promosPaths = [sourceDir];
