@@ -4,9 +4,9 @@
  */
 import path from 'path';
 import fs from 'fs';
-import { validateDirectory } from './filenames.js';
-import { validateMediaDirectory, MAX_MEDIA_SIZE } from './medias.js';
-import { validateStudentsFileStructure, STUDENT_FILESTRUCTURE_MESSAGE } from './filestructure.js';
+import { validateDirectory } from './filenames.mjs';
+import { validateMediaDirectory, MAX_MEDIA_SIZE } from './medias.mjs';
+import { validateStudentsFileStructure, STUDENT_FILESTRUCTURE_MESSAGE } from './filestructure.mjs';
 
 const SOURCE_DIR = 'src';
 const PROMOS_DIR = path.join(SOURCE_DIR, 'promos');
