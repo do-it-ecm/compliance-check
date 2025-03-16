@@ -1,4 +1,4 @@
-/** 
+/**
  * Part of the compliance check script, this module contains functions to validate filenames and directory names.
  */
 
