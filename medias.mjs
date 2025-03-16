@@ -32,7 +32,7 @@ export function validateMediaDirectory(srcPath) {
     for (const entry of entries) {
         const fullPath = path.join(srcPath, entry.name);
 
-        if (entry.isDirectory()) {
+        if (entry.isDirectory() && !IGNORE_DIRECTORIES.includes(entry.name)) {
             // Recursively validate subdirectories
             invalidPaths.push(...validateMediaDirectory(fullPath));
         } else {
