@@ -38,8 +38,6 @@ Zola-Gordon/
 │   │   │   ├── ...
 `;
 
-// Promos directory name
-export const PROMO_DIR = 'promos';
 // Regex to validate the subdirectories of the mon directory (temps-X.Y and bonus)
 const VALID_MON_SUBDIRS = /^(temps-\d+\.\d+|bonus)$/;
 // Regex to validate the subdirectories of the pok directory (temps-X and bonus)
@@ -55,20 +53,18 @@ const VALID_FILE = /^(.*\.(html|njk|md))$/;
 
 /**
  * Recursively validates that all student directories in a given directory have the correct file structure.
- * @param srcPath The path to the directory to validate.
+ * @param promoPaths List of paths to promotion directories
  * @returns A list of invalid file or directory paths.
  */
-export function validateStudentsFileStructure(srcPath) {
-    const promosDir = path.join(srcPath, PROMO_DIR);
+export function validateStudentsFileStructure(promoPaths) {
     const invalidPaths = [];
-    const entries = fs.readdirSync(promosDir, { withFileTypes: true });
 
-    for (const entry of entries) {
-        const fullPath = path.join(promosDir, entry.name);
-
-        if (entry.isDirectory() && VALID_PROMOTION.test(entry.name)) {
-            for (const student of fs.readdirSync(fullPath, { withFileTypes: true })) {
-                const studentPath = path.join(fullPath, student.name);
+    for (const promoPath of promoPaths) {
+        console.log(`Validating student file structure in ${promoPath}`);
+        // Check if promoPath is an existing directory and the name is a valid promotion format
+        if (fs.existsSync(promoPath) && VALID_PROMOTION.test(path.basename(promoPath))) {
+            for (const student of fs.readdirSync(promoPath, { withFileTypes: true })) {
+                const studentPath = path.join(promoPath, student.name);
                 if (student.isDirectory() && !NON_STUDENT_SUBDIRS.test(student.name)) {
                     invalidPaths.push(...validateStudentFileStructure(studentPath));
                 }
@@ -149,7 +145,7 @@ function validateMonDirectory(srcPath) {
         const fullPath = path.join(srcPath, entry.name);
 
         if (entry.isDirectory()) {
-            // If the subdirectory name matches temps-X.Y or bonus, 
+            // If the subdirectory name matches temps-X.Y or bonus,
             // we do further validation.
             if (VALID_MON_SUBDIRS.test(entry.name)) {
                 invalidPaths.push(...validateSubdirectory(fullPath));
@@ -170,7 +166,7 @@ function validateMonDirectory(srcPath) {
 
 /**
  * Validate the subdirectories of the mon or pok directory
- * If there are any .md files present in this subdirectory, 
+ * If there are any .md files present in this subdirectory,
  * an index file is required.
  * Also, subdirectories are optional, but allowed.
  * @param srcPath The path to the subdirectory
@@ -199,7 +195,7 @@ function validateSubdirectory(srcPath) {
 
     // If there's more than one markdown file (besides index.md),
     // we require an index file
-    // At minimum, if there's any .md file (including index.md), 
+    // At minimum, if there's any .md file (including index.md),
     // we must ensure index.md is present.
     if (markdownCount > 0 && !hasIndex) {
         invalidPaths.push(path.join(srcPath, 'index.md (MISSING)'));
@@ -209,7 +205,7 @@ function validateSubdirectory(srcPath) {
 }
 
 function validatePokDirectory(srcPath) {
-    // Similar structure checks for pok/ 
+    // Similar structure checks for pok/
     // Must have index.md, plus valid subdirectories: temps-X or bonus
     const invalidPaths = [];
     const entries = fs.readdirSync(srcPath, { withFileTypes: true });

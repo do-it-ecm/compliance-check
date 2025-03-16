@@ -1,0 +1,11 @@
+name: "Do-It Compliance Check"
+author: "BoxBoxJason"
+description: "Check if the filestructure is compliant with Do-It standards"
+inputs:
+  source:
+    description: "The source directory to check"
+    required: true
+    default: "."
+runs:
+  using: "node20"
+  main: "index.js"
