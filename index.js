@@ -3,23 +3,30 @@
  * Runs all compliance checks and logs the results
  */
 import path from 'path';
+import fs from 'fs';
 import { validateDirectory } from './filenames.js';
-import { validateMediaDirectory, validateMediaPlacement, MAX_MEDIA_SIZE } from './medias.js';
+import { validateMediaDirectory, MAX_MEDIA_SIZE } from './medias.js';
 import { validateStudentsFileStructure, STUDENT_FILESTRUCTURE_MESSAGE } from './filestructure.js';
 
 const SOURCE_DIR = 'src';
+const PROMOS_DIR = path.join(SOURCE_DIR, 'promos');
 
-export function runComplianceChecks() {
-    console.log(`Running compliance checks on ${path.join(process.cwd(), SOURCE_DIR)}...`);
-    const invalidPaths = validateDirectory(SOURCE_DIR);
-    const filesTooLarge = validateMediaDirectory(SOURCE_DIR);
-    const incorrectPlacement = validateMediaPlacement(SOURCE_DIR);
-    const invalidFileStructure = validateStudentsFileStructure(SOURCE_DIR);
+export function runComplianceChecks(sourceDir = SOURCE_DIR) {
+    console.log(`Running compliance checks on ${sourceDir}`);
+    const invalidPaths = validateDirectory(sourceDir);
+    const filesTooLarge = validateMediaDirectory(sourceDir);
 
-    if (incorrectPlacement.length) {
-        console.error(`WARNING: The following files were detected as media because they do not end with '.md' and are placed in the wrong directory, please move them to an assets directory:`);
-        incorrectPlacement.forEach(path => console.error(`    - ${path}`));
+    let promosPaths = [];
+    if (sourceDir === SOURCE_DIR) {
+        // If the source directory is the default one, list all promotion directories
+        promosPaths = fs.readdirSync(PROMOS_DIR, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => path.join(PROMOS_DIR, dirent.name));
+    } else {
+        // Otherwise, assume the source directory is a promotion directory
+        promosPaths = [sourceDir];
     }
+    const invalidFileStructure = validateStudentsFileStructure(promosPaths);
 
     if (invalidPaths.length) {
         console.error('The following files or directories have invalid names (must be alphanumeric characters, upper or lower, dashes, underscores or dots):');
@@ -44,4 +51,8 @@ export function runComplianceChecks() {
     }
 }
 
-runComplianceChecks();
+// Check if the script is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+    const sourceDir = process.argv[2] || process.env.INPUT_SOURCE || SOURCE_DIR;
+    runComplianceChecks(sourceDir);
+}
