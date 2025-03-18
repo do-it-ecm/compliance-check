@@ -12,7 +12,7 @@ This returns a non-zero exit code if the compliance check fails.
 ## Example usage
 
 ```yaml
-uses: do-it-ecm/compliance-check@1.0.0
+uses: do-it-ecm/compliance-check@1
 with:
   source: 'src'
 ```
